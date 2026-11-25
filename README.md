@@ -6,13 +6,15 @@
   Manage industrial equipment, monitor maintenance activities, and organize preventive maintenance schedules in one platform.
 </p>
 
+
 <p align="center">
-  ![Ruby](https://img.shields.io/badge/Ruby-3.4-red?logo=ruby)
-  ![Rails](https://img.shields.io/badge/Rails-8.1.4-red?logo=rubyonrails)
-  ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue?logo=postgresql)
-  ![Bootstrap](https://img.shields.io/badge/UI-Bootstrap-7952B3?logo=bootstrap)
-  ![Status](https://img.shields.io/badge/Status-In%20Development-orange)
+  <img src="https://img.shields.io/badge/Ruby-3.4-red?logo=ruby" />
+  <img src="https://img.shields.io/badge/Rails-8.1.4-red?logo=rubyonrails" />
+  <img src="https://img.shields.io/badge/Database-PostgreSQL-blue?logo=postgresql" />
+  <img src="https://img.shields.io/badge/UI-Bootstrap-7952B3?logo=bootstrap" />
+  <img src="https://img.shields.io/badge/Status-In%20Development-orange" />
 </p>
+
 
 ---
 
@@ -70,18 +72,6 @@ This project is developed using Ruby on Rails and PostgreSQL, with a focus on pr
 | Bootstrap 5 | Frontend Styling |
 | JavaScript | Interactive Components |
 | Chart.js | Data Visualization |
-
-## Application Screenshots
-
-Screenshots of the application will be added here.
-
-| Dashboard | Equipment Management |
-|---|---|
-| Add dashboard screenshot here | Add equipment screenshot here |
-
-| Maintenance History | Maintenance Report |
-|---|---|
-| Add maintenance screenshot here | Add report screenshot here |
 
 ## Installation & Setup
 
