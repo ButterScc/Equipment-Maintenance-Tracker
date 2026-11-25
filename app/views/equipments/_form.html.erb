@@ -1,0 +1,104 @@
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-4">
+
+    <% if @equipment.errors.any? %>
+      <div class="alert alert-danger">
+        <h6 class="fw-bold">Terdapat kesalahan:</h6>
+        <ul class="mb-0">
+          <% @equipment.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with model: @equipment,
+    url: (@equipment.persisted? ? equipment_path(@equipment) : equipments_path),
+    method: (@equipment.persisted? ? :patch : :post) do |form| %>
+
+      <div class="mb-3">
+        <%= form.label :name, "Nama Equipment", class: "form-label fw-semibold" %>
+        <%= form.text_field :name, class: "form-control",
+            placeholder: "Masukkan nama equipment" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :code, "Kode Equipment", class: "form-label fw-semibold" %>
+        <%= form.text_field :code, class: "form-control",
+            placeholder: "Contoh: EQ-001" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :category, "Kategori", class: "form-label fw-semibold" %>
+        <%= form.text_field :category, class: "form-control",
+            placeholder: "Contoh: Mesin, Kendaraan, Elektronik" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :location, "Lokasi", class: "form-label fw-semibold" %>
+        <%= form.text_field :location, class: "form-control",
+            placeholder: "Masukkan lokasi equipment" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :status, "Status", class: "form-label fw-semibold" %>
+        <%= form.select :status,
+            [["Active", "active"],
+             ["Maintenance", "maintenance"],
+             ["Broken", "broken"]],
+            { prompt: "Pilih Status" },
+            class: "form-select" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :manufacturer, "Manufacturer", class: "form-label fw-semibold" %>
+        <%= form.text_field :manufacturer, class: "form-control",
+            placeholder: "Nama produsen" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :model, "Model", class: "form-label fw-semibold" %>
+        <%= form.text_field :model, class: "form-control",
+            placeholder: "Masukkan model equipment" %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :serial_number, "Serial Number", class: "form-label fw-semibold" %>
+        <%= form.text_field :serial_number, class: "form-control",
+            placeholder: "Masukkan serial number" %>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= form.submit "Simpan Equipment", class: "btn btn-primary" %>
+
+        <%= link_to "Kembali", equipments_path,
+            class: "btn btn-outline-secondary" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :next_maintenance_date, "Next Maintenance Date", class: "form-label" %>
+        <%= form.date_field :next_maintenance_date, class: "form-control" %>
+      </div>
+
+      <div class="mb-3">
+  <%= form.label :maintenance_interval_days, "Interval Maintenance Otomatis" %>
+
+  <%= form.select :maintenance_interval_days,
+      [
+        ["30 Hari", 30],
+        ["60 Hari", 60],
+        ["90 Hari", 90]
+      ],
+      { include_blank: "Pilih Interval" },
+      class: "form-select" %>
+
+  <small class="text-muted">
+    Digunakan untuk menghitung jadwal maintenance berikutnya secara otomatis.
+  </small>
+</div>
+
+    <% end %>
+
+  </div>
+</div>

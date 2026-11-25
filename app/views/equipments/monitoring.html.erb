@@ -1,0 +1,119 @@
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">Equipment Status Monitoring</h2>
+    <p class="text-muted mb-0">Pantau kondisi dan riwayat pemeliharaan equipment.</p>
+  </div>
+
+  <%= link_to "Kembali ke Dashboard", equipments_path,
+      class: "btn btn-outline-secondary" %>
+</div>
+
+<!-- Ringkasan Status -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <p class="text-muted mb-1">Total Equipment</p>
+        <h3 class="fw-bold mb-0"><%= @equipments.count %></h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <p class="text-muted mb-1">Active</p>
+        <h3 class="fw-bold text-success mb-0">
+          <%= @equipments.count { |e| e.status.to_s.downcase == "active" } %>
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <p class="text-muted mb-1">Maintenance</p>
+        <h3 class="fw-bold text-warning mb-0">
+          <%= @equipments.count { |e| e.status.to_s.downcase == "maintenance" } %>
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <p class="text-muted mb-1">Broken</p>
+        <h3 class="fw-bold text-danger mb-0">
+          <%= @equipments.count { |e| e.status.to_s.downcase == "broken" } %>
+        </h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabel Monitoring -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white border-0 p-3">
+    <h5 class="fw-bold mb-0">Equipment Monitoring Data</h5>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-3">Nama Equipment</th>
+            <th>Kode</th>
+            <th>Lokasi</th>
+            <th>Status</th>
+            <th>Maintenance Terakhir</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @equipments.each do |equipment| %>
+            <tr>
+              <td class="ps-3 fw-semibold">
+                <%= equipment.name %>
+              </td>
+
+              <td><%= equipment.code %></td>
+
+              <td><%= equipment.location.presence || "-" %></td>
+
+              <td>
+                <% case equipment.status.to_s.downcase %>
+                <% when "active" %>
+                  <span class="badge bg-success">Active</span>
+                <% when "maintenance" %>
+                  <span class="badge bg-warning text-dark">Maintenance</span>
+                <% when "broken" %>
+                  <span class="badge bg-danger">Broken</span>
+                <% else %>
+                  <span class="badge bg-secondary">
+                    <%= equipment.status %>
+                  </span>
+                <% end %>
+              </td>
+
+              <td>
+                <%= equipment.maintenances.maximum(:maintenance_date) || "Belum ada" %>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @equipments.empty? %>
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">
+                Belum ada equipment yang terdaftar.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

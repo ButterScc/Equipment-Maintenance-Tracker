@@ -1,0 +1,144 @@
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">Maintenance History</h2>
+    <p class="text-muted mb-0">
+      Riwayat pemeliharaan seluruh equipment.
+    </p>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= link_to "Maintenance Report", report_maintenances_path,
+        class: "btn btn-outline-primary" %>
+
+    <%= link_to new_maintenance_path, class: "btn btn-primary" do %>
+      + Tambah Maintenance
+    <% end %>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <p class="text-muted mb-1">Total Maintenance</p>
+        <h3 class="fw-bold mb-0"><%= Maintenance.count %></h3>
+        <small class="text-muted">Seluruh riwayat tercatat</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white py-3">
+    <h5 class="fw-semibold mb-0">Daftar Riwayat Maintenance</h5>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-3">Equipment</th>
+            <th>Tanggal</th>
+            <th>Jenis</th>
+            <th>Teknisi</th>
+            <th>Deskripsi</th>
+            <th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @maintenances.each do |maintenance| %>
+            <tr>
+              <td class="ps-3 fw-semibold">
+                <%= maintenance.equipment.name %>
+              </td>
+
+              <td>
+                <%= maintenance.maintenance_date.strftime("%d-%m-%Y") %>
+              </td>
+
+              <td>
+                <% badge_class = case maintenance.maintenance_type %>
+                <% when "Inspection" then "bg-info text-dark" %>
+                <% when "Repair" then "bg-warning text-dark" %>
+                <% when "Replacement" then "bg-danger" %>
+                <% else "bg-secondary" %>
+                <% end %>
+
+                <span class="badge <%= badge_class %>">
+                  <%= maintenance.maintenance_type %>
+                </span>
+              </td>
+
+              <td><%= maintenance.technician %></td>
+
+              <td style="max-width: 220px;">
+                <span class="text-muted">
+                  <%= truncate(maintenance.description.presence || "-", length: 55) %>
+                </span>
+              </td>
+
+              <td>
+                <div class="d-flex justify-content-center gap-2">
+                  <%= link_to "Edit", edit_maintenance_path(maintenance),
+                      class: "btn btn-sm btn-outline-warning" %>
+
+                  <%= button_to "Hapus",
+                      maintenance_path(maintenance),
+                      method: :delete,
+                      class: "btn btn-sm btn-outline-danger",
+                      form: {
+                        data: {
+                          turbo_confirm: "Yakin ingin menghapus riwayat ini?"
+                        }
+                      } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @maintenances.empty? %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-5">
+                <h6>Belum ada riwayat maintenance</h6>
+                <small>Tambahkan maintenance untuk mulai mencatat riwayat.</small>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+    <small class="text-muted">
+      Halaman <%= @current_page %> dari <%= @total_pages %>
+    </small>
+
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item <%= 'disabled' if @current_page == 1 %>">
+          <%= link_to "Previous",
+              maintenances_path(page: [@current_page - 1, 1].max),
+              class: "page-link" %>
+        </li>
+
+        <% (1..@total_pages).each do |page| %>
+          <li class="page-item <%= 'active' if page == @current_page %>">
+            <%= link_to page,
+                maintenances_path(page: page),
+                class: "page-link" %>
+          </li>
+        <% end %>
+
+        <li class="page-item <%= 'disabled' if @current_page == @total_pages %>">
+          <%= link_to "Next",
+              maintenances_path(page: [@current_page + 1, @total_pages].min),
+              class: "page-link" %>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

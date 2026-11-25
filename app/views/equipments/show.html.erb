@@ -1,0 +1,190 @@
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">Equipment Detail</h2>
+    <p class="text-muted mb-0">Informasi lengkap equipment.</p>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= link_to "Edit Equipment", edit_equipment_path(@equipment),
+        class: "btn btn-warning" %>
+
+    <%= link_to "Kembali", equipments_path,
+        class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white p-3">
+    <h5 class="fw-bold mb-0">Informasi Equipment</h5>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white p-3">
+    <h5 class="fw-bold mb-0">Jadwal Maintenance</h5>
+  </div>
+
+  <div class="card-body">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Interval Maintenance</p>
+        <h6>
+          <%= @equipment.maintenance_interval_days.present? ?
+              "#{@equipment.maintenance_interval_days} Hari" : "Belum diatur" %>
+        </h6>
+      </div>
+
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Maintenance Berikutnya</p>
+
+        <% if @equipment.next_maintenance_date.present? %>
+          <h6>
+            <%= @equipment.next_maintenance_date.strftime("%d-%m-%Y") %>
+          </h6>
+
+          <% if @equipment.next_maintenance_date < Date.current %>
+            <span class="badge bg-danger">Overdue</span>
+          <% elsif @equipment.next_maintenance_date <= 7.days.from_now.to_date %>
+            <span class="badge bg-warning text-dark">Due Soon</span>
+          <% else %>
+            <span class="badge bg-success">Scheduled</span>
+          <% end %>
+        <% else %>
+          <span class="text-muted">Belum dijadwalkan</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="card-body">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Nama Equipment</p>
+        <h6><%= @equipment.name %></h6>
+      </div>
+
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Kode Equipment</p>
+        <h6><%= @equipment.code %></h6>
+      </div>
+
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Kategori</p>
+        <h6><%= @equipment.category.presence || "-" %></h6>
+      </div>
+
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Lokasi</p>
+        <h6><%= @equipment.location.presence || "-" %></h6>
+      </div>
+
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Status</p>
+        <% case @equipment.status.to_s.downcase %>
+        <% when "active" %>
+          <span class="badge bg-success">Active</span>
+        <% when "maintenance" %>
+          <span class="badge bg-warning text-dark">Maintenance</span>
+        <% when "broken" %>
+          <span class="badge bg-danger">Broken</span>
+        <% else %>
+          <span class="badge bg-secondary"><%= @equipment.status %></span>
+        <% end %>
+      </div>
+
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Manufacturer</p>
+        <h6><%= @equipment.manufacturer.presence || "-" %></h6>
+      </div>
+
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Model</p>
+        <h6><%= @equipment.model.presence || "-" %></h6>
+      </div>
+
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Serial Number</p>
+        <h6><%= @equipment.serial_number.presence || "-" %></h6>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white p-3">
+    <h5 class="fw-bold mb-0">Riwayat Maintenance</h5>
+  </div>
+
+  <div class="card shadow-sm mt-4">
+  <div class="card-header bg-white">
+    <h5 class="mb-0">Equipment Status History</h5>
+  </div>
+
+  <div class="card-body">
+    <% if @equipment.equipment_status_histories.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Status Sebelumnya</th>
+              <th>Status Baru</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @equipment.equipment_status_histories.order(created_at: :desc).each do |history| %>
+              <tr>
+                <td><%= history.created_at.strftime("%d-%m-%Y %H:%M") %></td>
+                <td><%= history.previous_status %></td>
+                <td>
+                  <span class="badge bg-primary">
+                    <%= history.new_status %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-muted mb-0">Belum ada perubahan status.</p>
+    <% end %>
+  </div>
+</div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-3">Tanggal</th>
+            <th>Jenis</th>
+            <th>Teknisi</th>
+            <th>Deskripsi</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @maintenances.each do |maintenance| %>
+            <tr>
+              <td class="ps-3"><%= maintenance.maintenance_date %></td>
+              <td><%= maintenance.maintenance_type %></td>
+              <td><%= maintenance.technician %></td>
+              <td><%= maintenance.description.presence || "-" %></td>
+            </tr>
+          <% end %>
+
+          <% if @maintenances.empty? %>
+            <tr>
+              <td colspan="4" class="text-center text-muted py-4">
+                Belum ada riwayat maintenance.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

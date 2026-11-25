@@ -1,0 +1,153 @@
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">Maintenance Report</h2>
+    <p class="text-muted mb-0">
+      Laporan riwayat pemeliharaan seluruh equipment.
+    </p>
+  </div>
+
+  <%= link_to "Kembali", maintenances_path,
+      class: "btn btn-outline-secondary" %>
+</div>
+
+<!-- Filter Laporan -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white py-3">
+    <h5 class="fw-semibold mb-0">Filter Periode Laporan</h5>
+  </div>
+
+  <div class="card-body p-4">
+    <%= form_with url: report_maintenances_path,
+        method: :get,
+        class: "row g-3 align-items-end" do %>
+
+      <div class="col-md-4">
+        <%= label_tag :start_date, "Tanggal Mulai",
+            class: "form-label fw-semibold" %>
+        <%= date_field_tag :start_date, params[:start_date],
+            class: "form-control" %>
+      </div>
+
+      <div class="col-md-4">
+        <%= label_tag :end_date, "Tanggal Akhir",
+            class: "form-label fw-semibold" %>
+        <%= date_field_tag :end_date, params[:end_date],
+            class: "form-control" %>
+      </div>
+
+      <div class="col-md-4 d-flex gap-2">
+        <%= submit_tag "Terapkan Filter",
+            class: "btn btn-primary px-4" %>
+
+        <%= link_to "Reset", report_maintenances_path,
+            class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Ringkasan -->
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="text-muted mb-2">Total Maintenance</p>
+            <h2 class="fw-bold mb-0"><%= @total_maintenance %></h2>
+            <small class="text-muted">Catatan pemeliharaan</small>
+          </div>
+
+          <div class="rounded-3 bg-primary bg-opacity-10 p-3">
+            <span class="text-primary fs-3">⚙</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabel Laporan -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+    <div>
+      <h5 class="fw-semibold mb-1">Data Laporan Maintenance</h5>
+      <small class="text-muted">
+        Menampilkan <%= @maintenances.size %> data maintenance
+      </small>
+    </div>
+
+    <%= link_to "Export PDF",
+        export_pdf_maintenances_path(
+          start_date: params[:start_date],
+          end_date: params[:end_date]
+        ),
+        class: "btn btn-success btn-sm px-3" %>
+  </div>
+
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-3">Equipment</th>
+            <th>Tanggal</th>
+            <th>Jenis Maintenance</th>
+            <th>Teknisi</th>
+            <th>Deskripsi</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @maintenances.each do |maintenance| %>
+            <tr>
+              <td class="ps-3 fw-semibold">
+                <%= maintenance.equipment.name %>
+              </td>
+
+              <td>
+                <%= maintenance.maintenance_date.strftime("%d-%m-%Y") %>
+              </td>
+
+              <td>
+                <% badge_class = case maintenance.maintenance_type %>
+                <% when "Inspection" then "bg-info text-dark" %>
+                <% when "Repair" then "bg-warning text-dark" %>
+                <% when "Replacement" then "bg-danger" %>
+                <% else "bg-secondary" %>
+                <% end %>
+
+                <span class="badge <%= badge_class %>">
+                  <%= maintenance.maintenance_type %>
+                </span>
+              </td>
+
+              <td><%= maintenance.technician %></td>
+
+              <td style="max-width: 250px;">
+                <span class="text-muted">
+                  <%= truncate(
+                    maintenance.description.presence || "-",
+                    length: 60
+                  ) %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @maintenances.empty? %>
+            <tr>
+              <td colspan="5" class="text-center text-muted py-5">
+                <h6 class="mb-1">Tidak ada data maintenance</h6>
+                <small>
+                  Belum ada catatan pada periode yang dipilih.
+                </small>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

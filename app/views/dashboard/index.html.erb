@@ -1,0 +1,84 @@
+
+<div class="container mt-4">
+  <h2 class="mb-4">Maintenance Dashboard</h2>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card border-danger shadow-sm">
+        <div class="card-body">
+          <h5 class="text-danger">Overdue Maintenance</h5>
+          <h2><%= @overdue_schedule_count %></h2>
+          <p class="text-muted mb-0">Equipment melewati jadwal maintenance</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card border-warning shadow-sm">
+        <div class="card-body">
+          <h5 class="text-warning">Due Soon</h5>
+          <h2><%= @due_soon_schedule_count %></h2>
+          <p class="text-muted mb-0">Maintenance dalam 7 hari ke depan</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row mt-4 g-3">
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-danger text-white">
+        <strong>Overdue Equipment</strong>
+      </div>
+      <div class="card-body">
+        <% if @overdue_schedules.any? %>
+          <% @overdue_schedules.each do |equipment| %>
+            <div class="border-bottom py-2">
+              <strong><%= equipment.name %></strong>
+              <div class="small text-muted">
+                Kode: <%= equipment.code %>
+              </div>
+              <span class="badge bg-danger">
+                <%= equipment.next_maintenance_date.strftime("%d-%m-%Y") %>
+              </span>
+              <%= link_to "Detail", equipment_path(equipment),
+                  class: "btn btn-sm btn-outline-primary ms-2" %>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0">Tidak ada maintenance yang terlambat.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-warning">
+        <strong>Due Soon Equipment</strong>
+      </div>
+      <div class="card-body">
+        <% if @due_soon_schedules.any? %>
+          <% @due_soon_schedules.each do |equipment| %>
+            <div class="border-bottom py-2">
+              <strong><%= equipment.name %></strong>
+              <div class="small text-muted">
+                Kode: <%= equipment.code %>
+              </div>
+              <span class="badge bg-warning text-dark">
+                <%= equipment.next_maintenance_date.strftime("%d-%m-%Y") %>
+              </span>
+              <%= link_to "Detail", equipment_path(equipment),
+                  class: "btn btn-sm btn-outline-primary ms-2" %>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0">Tidak ada jadwal maintenance dalam 7 hari.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+

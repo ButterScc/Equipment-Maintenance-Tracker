@@ -1,0 +1,703 @@
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">Equipment Management</h2>
+    <p class="text-muted mb-0">Kelola dan pantau seluruh equipment.</p>
+  </div>
+
+  <%= link_to "Tambah Equipment", new_equipment_path,
+      class: "btn btn-primary" %>
+</div>
+
+
+<!-- Dashboard Statistics -->
+<h5 class="fw-bold mb-3">Dashboard Overview</h5>
+
+<div class="row g-3 mb-4">
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Total Equipment</p>
+        <h2 class="fw-bold"><%= @total_equipment %></h2>
+        <span class="text-primary small">Seluruh equipment</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Active</p>
+        <h2 class="fw-bold text-success"><%= @active_equipment %></h2>
+        <span class="small text-muted">Equipment aktif</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Maintenance</p>
+        <h2 class="fw-bold text-warning"><%= @maintenance_equipment %></h2>
+        <span class="small text-muted">Sedang diperbaiki</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Broken</p>
+        <h2 class="fw-bold text-danger"><%= @broken_equipment %></h2>
+        <span class="small text-muted">Equipment rusak</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-2">Total Status Changes</p>
+        <h3 class="fw-bold mb-0"><%= @total_status_changes %></h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-2">Equipment Pernah Maintenance</p>
+        <h3 class="fw-bold mb-0"><%= @equipment_ever_maintained %></h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-2">Most Maintained Equipment</p>
+
+        <% if @most_maintained_equipment %>
+          <h5 class="fw-bold"><%= @most_maintained_equipment.name %></h5>
+          <p class="text-muted mb-0">
+            <%= @most_maintained_equipment.maintenance_count %>
+            kali maintenance
+          </p>
+        <% else %>
+          <p class="text-muted mb-0">Belum ada equipment.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Maintenance Schedule Overview -->
+<h5 class="fw-bold mt-4 mb-3">Maintenance Schedule Overview</h5>
+
+<div class="row g-3 mb-4">
+
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0 border-start border-danger border-4 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Overdue Schedule</p>
+        <h2 class="fw-bold text-danger">
+          <%= @overdue_schedule_count %>
+        </h2>
+        <span class="small text-muted">Jadwal sudah lewat</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Due Soon</p>
+        <h2 class="fw-bold text-warning">
+          <%= @due_soon_count %>
+        </h2>
+        <span class="small text-muted">Dalam 7 hari ke depan</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Scheduled</p>
+        <h2 class="fw-bold text-success">
+          <%= @scheduled_count %>
+        </h2>
+        <span class="small text-muted">Jadwal lebih dari 7 hari</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- Maintenance Schedule Alert List -->
+<div class="card shadow-sm border-0 mt-4 mb-4">
+  <div class="card-header bg-white">
+    <h5 class="fw-bold mb-0">Upcoming Maintenance Schedule</h5>
+  </div>
+
+  <div class="card-body">
+    <% scheduled_equipments = Equipment.where(
+      next_maintenance_date: ..7.days.from_now.to_date
+    ).where.not(next_maintenance_date: nil)
+      .order(:next_maintenance_date) %>
+
+    <% if @upcoming_scheduled_equipments.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Equipment</th>
+              <th>Code</th>
+              <th>Location</th>
+              <th>Schedule Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @upcoming_scheduled_equipments.each do |equipment| %>
+              <tr>
+                <td><%= equipment.name %></td>
+                <td><%= equipment.code %></td>
+                <td><%= equipment.location %></td>
+                <td>
+                  <%= equipment.next_maintenance_date.strftime("%d-%m-%Y") %>
+                </td>
+                <td>
+                  <% if equipment.next_maintenance_date < Date.current %>
+                    <span class="badge bg-danger">Overdue</span>
+                  <% else %>
+                    <span class="badge bg-warning text-dark">Due Soon</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="alert alert-success mb-0">
+        Tidak ada jadwal maintenance yang mendesak.
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
+<!-- Monthly Maintenance Statistics -->
+<div class="card shadow-sm border-0 mt-4">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h5 class="mb-0">Monthly Maintenance Statistics</h5>
+
+    <%= form_with url: equipments_path, method: :get, local: true do |form| %>
+      <%= form.select :period,
+          options_for_select([
+            ["6 Bulan", "6"],
+            ["12 Bulan", "12"],
+            ["24 Bulan", "24"]
+          ], @chart_period),
+          {},
+          class: "form-select",
+          onchange: "this.form.submit()" %>
+    <% end %>
+  </div>
+
+  <div class="card-body">
+    <canvas id="maintenanceChart"></canvas>
+  </div>
+</div>
+
+<!-- Equipment Status Distribution -->
+<div class="card shadow-sm border-0 mt-4">
+  <div class="card-header bg-white">
+    <h5 class="mb-0">Equipment Status Distribution</h5>
+  </div>
+
+  <div class="card-body">
+    <div style="max-width: 400px; margin: auto;">
+      <canvas id="statusChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  document.addEventListener("turbo:load", function() {
+    const maintenanceCanvas = document.getElementById("maintenanceChart");
+
+    if (maintenanceCanvas) {
+      if (maintenanceCanvas.chartInstance) {
+        maintenanceCanvas.chartInstance.destroy();
+      }
+
+      maintenanceCanvas.chartInstance = new Chart(maintenanceCanvas, {
+        type: "bar",
+        data: {
+          labels: <%= raw @maintenance_chart_labels.to_json %>,
+          datasets: [{
+            label: "Total Maintenance",
+            data: <%= raw @maintenance_chart_data.to_json %>,
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+            borderRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
+            }
+          }
+        }
+      });
+    }
+
+    const statusCanvas = document.getElementById("statusChart");
+
+    if (statusCanvas) {
+      if (statusCanvas.chartInstance) {
+        statusCanvas.chartInstance.destroy();
+      }
+
+      statusCanvas.chartInstance = new Chart(statusCanvas, {
+        type: "doughnut",
+        data: {
+          labels: <%= raw @status_chart_labels.to_json %>,
+          datasets: [{
+            data: <%= raw @status_chart_data.to_json %>,
+            backgroundColor: ["#198754", "#ffc107", "#dc3545"],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "bottom" }
+          }
+        }
+      });
+    }
+  });
+</script>
+
+
+
+<!-- Maintenance Performance Analytics -->
+
+<!-- Maintenance Overdue Alert -->
+<div class="card shadow-sm border-0 mt-4 mb-4">
+  <div class="card-header bg-danger text-white">
+    <h5 class="mb-0">
+      <i class="bi bi-exclamation-triangle"></i>
+      Maintenance Overdue Alert
+    </h5>
+  </div>
+
+  <div class="card-body">
+    <% if @overdue_equipments.any? %>
+      <div class="alert alert-warning">
+        Ada <strong><%= @overdue_equipments.length %> equipment</strong>
+        yang perlu diperiksa karena belum pernah maintenance
+        atau sudah lebih dari 90 hari.
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Equipment</th>
+              <th>Code</th>
+              <th>Location</th>
+              <th>Last Maintenance</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @overdue_equipments.each do |equipment| %>
+              <tr>
+                <td><%= equipment.name %></td>
+                <td><%= equipment.code %></td>
+                <td><%= equipment.location %></td>
+                <td>
+                  <% if equipment.last_maintenance_date.present? %>
+                    <span class="text-danger">
+                      <%= equipment.last_maintenance_date.strftime("%d %B %Y") %>
+                    </span>
+                  <% else %>
+                    <span class="badge bg-secondary">Never Maintained</span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= link_to "Detail",
+                      equipment_path(equipment),
+                      class: "btn btn-sm btn-outline-primary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="alert alert-success mb-0">
+        Semua equipment masih dalam kondisi jadwal maintenance yang baik.
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<h5 class="fw-bold mt-4 mb-3">Maintenance Performance Analytics</h5>
+
+<div class="row g-3 mb-4">
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Maintenance Bulan Ini</p>
+        <h3 class="fw-bold text-primary">
+          <%= @maintenance_this_month %>
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Maintenance Tahun Ini</p>
+        <h3 class="fw-bold text-success">
+          <%= @maintenance_this_year %>
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Rata-rata per Bulan</p>
+        <h3 class="fw-bold text-info">
+          <%= @average_maintenance %>
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <p class="text-muted mb-1">Top Technician</p>
+
+        <% if @top_technician %>
+          <h5 class="fw-bold">
+            <%= @top_technician[0] %>
+          </h5>
+          <p class="text-muted mb-0">
+            <%= @top_technician[1] %> kali maintenance
+          </p>
+        <% else %>
+          <p class="text-muted mb-0">Belum ada data.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+  </div>
+
+  <div class="card-body">
+    <canvas id="maintenanceChart"></canvas>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  document.addEventListener("turbo:load", function() {
+    const canvas = document.getElementById("maintenanceChart");
+
+    if (!canvas) return;
+
+    if (canvas.chartInstance) {
+      canvas.chartInstance.destroy();
+    }
+
+    const labels = <%= raw @maintenance_chart_labels.to_json %>;
+    const data = <%= raw @maintenance_chart_data.to_json %>;
+
+    canvas.chartInstance = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Total Maintenance",
+          data: data,
+          backgroundColor: "rgba(54, 162, 235, 0.6)",
+          borderColor: "rgba(54, 162, 235, 1)",
+          borderWidth: 1,
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+
+</div>
+
+
+<!-- Search and Filter -->
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+    <h5 class="fw-bold mb-3">Search & Filter</h5>
+
+    <%= form_with url: equipments_path, method: :get,
+        local: true, class: "row g-2" do |form| %>
+
+      <div class="col-md-3">
+        <%= form.text_field :search,
+            placeholder: "Cari nama, kode, atau lokasi...",
+            value: params[:search],
+            class: "form-control" %>
+      </div>
+
+      <div class="col-md-3">
+        <%= form.select :status,
+            options_for_select(
+              [["Semua Status", ""],
+               ["Active", "active"],
+               ["Maintenance", "maintenance"],
+               ["Broken", "broken"]],
+              params[:status]
+            ),
+            {},
+            class: "form-select" %>
+      </div>
+
+      <div class="col-md-3">
+        <%= form.select :priority,
+            options_for_select(
+              [["All Priority", ""],
+               ["High", "High"],
+               ["Medium", "Medium"],
+               ["Low", "Low"]],
+              params[:priority]
+            ),
+            {},
+            class: "form-select" %>
+      </div>
+
+      <div class="col-md-3 d-flex gap-2">
+        <%= form.submit "Cari", class: "btn btn-primary" %>
+
+        <%= link_to "Reset", equipments_path,
+            class: "btn btn-outline-secondary" %>
+      </div>
+
+    <% end %>
+  </div>
+</div>
+
+
+
+<!-- Equipment Table -->
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0">Equipment List</h5>
+
+      <%= link_to "Monitoring",
+          monitoring_equipments_path,
+          class: "btn btn-outline-primary btn-sm" %>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+
+        <thead class="table-light">
+          <tr>
+            <th>Nama</th>
+            <th>Kode</th>
+            <th>Kategori</th>
+            <th>Lokasi</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Next Maintenance</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @equipments.each do |equipment| %>
+            <tr>
+              <td class="fw-semibold">
+                <%= equipment.name %>
+              </td>
+
+              <td><%= equipment.code %></td>
+              <td><%= equipment.category %></td>
+              <td><%= equipment.location %></td>
+
+              <!-- Status -->
+              <td>
+                <% case equipment.status.to_s.downcase %>
+                <% when "active" %>
+                  <span class="badge bg-success">Active</span>
+                <% when "maintenance" %>
+                  <span class="badge bg-warning text-dark">Maintenance</span>
+                <% when "broken" %>
+                  <span class="badge bg-danger">Broken</span>
+                <% else %>
+                  <span class="badge bg-secondary">
+                    <%= equipment.status %>
+                  </span>
+                <% end %>
+              </td>
+
+              <!-- Priority -->
+              <td>
+                <% case equipment.priority %>
+                <% when "High" %>
+                  <span class="badge bg-danger">High</span>
+                <% when "Medium" %>
+                  <span class="badge bg-warning text-dark">Medium</span>
+                <% when "Low" %>
+                  <span class="badge bg-success">Low</span>
+                <% else %>
+                  <span class="badge bg-secondary">Not Set</span>
+                <% end %>
+              </td>
+
+              <!-- Next Maintenance -->
+              <td>
+                <% if equipment.next_maintenance_date.present? %>
+                  <% if equipment.next_maintenance_date < Date.current %>
+                    <span class="badge bg-danger">Overdue</span>
+                  <% elsif equipment.next_maintenance_date <= 7.days.from_now.to_date %>
+                    <span class="badge bg-warning text-dark">Due Soon</span>
+                  <% else %>
+                    <span class="badge bg-success">Scheduled</span>
+                  <% end %>
+
+                  <div class="small text-muted mt-1">
+                    <%= equipment.next_maintenance_date.strftime("%d-%m-%Y") %>
+                  </div>
+                <% else %>
+                  <span class="text-muted">Belum dijadwalkan</span>
+                <% end %>
+              </td>
+
+              <!-- Action -->
+              <td>
+                <div class="d-flex gap-2">
+                  <%= link_to "Detail",
+                      equipment_path(equipment),
+                      class: "btn btn-sm btn-outline-info" %>
+
+                  <%= link_to "Edit",
+                      edit_equipment_path(equipment),
+                      class: "btn btn-sm btn-outline-primary" %>
+
+                  <%= button_to "Hapus",
+                      equipment_path(equipment),
+                      method: :delete,
+                      class: "btn btn-sm btn-outline-danger",
+                      form: {
+                        data: {
+                          turbo_confirm: "Yakin ingin menghapus equipment ini?"
+                        }
+                      } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @equipments.empty? %>
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">
+                Tidak ada equipment ditemukan.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+
+      <div class="text-muted small">
+        Halaman <%= @current_page %> dari <%= @total_pages %>
+      </div>
+
+      <nav>
+        <ul class="pagination mb-0">
+
+          <li class="page-item <%= 'disabled' if @current_page == 1 %>">
+            <%= link_to "Previous",
+                equipments_path(
+                  page: @current_page - 1,
+                  search: params[:search],
+                  status: params[:status],
+                  priority: params[:priority]
+                ),
+                class: "page-link" %>
+          </li>
+
+          <% (1..@total_pages).each do |page| %>
+            <li class="page-item <%= 'active' if page == @current_page %>">
+              <%= link_to page,
+                  equipments_path(
+                    page: page,
+                    search: params[:search],
+                    status: params[:status],
+                    priority: params[:priority]
+                  ),
+                  class: "page-link" %>
+            </li>
+          <% end %>
+
+          <li class="page-item <%= 'disabled' if @current_page == @total_pages %>">
+            <%= link_to "Next",
+                equipments_path(
+                  page: @current_page + 1,
+                  search: params[:search],
+                  status: params[:status],
+                  priority: params[:priority]
+                ),
+                class: "page-link" %>
+          </li>
+
+        </ul>
+      </nav>
+    </div>
+
+  </div>
+</div>

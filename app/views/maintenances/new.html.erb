@@ -1,0 +1,95 @@
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">Tambah Maintenance History</h2>
+    <p class="text-muted mb-0">Tambahkan catatan pemeliharaan equipment.</p>
+  </div>
+
+  <%= link_to "Kembali", maintenances_path,
+      class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white py-3">
+    <h5 class="mb-0 fw-semibold">Form Tambah Maintenance</h5>
+  </div>
+
+  <div class="card-body p-4">
+    <%= form_with model: @maintenance do |form| %>
+
+      <div class="mb-4">
+        <%= form.label :equipment_id, "Pilih Equipment",
+            class: "form-label fw-semibold" %>
+
+        <%= form.collection_select :equipment_id,
+            Equipment.all, :id, :name,
+            { prompt: "Pilih Equipment" },
+            { class: "form-select", required: true } %>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <%= form.label :maintenance_date, "Tanggal Maintenance",
+              class: "form-label fw-semibold" %>
+
+          <%= form.date_field :maintenance_date,
+              class: "form-control", required: true %>
+        </div>
+
+        <div class="col-md-6 mb-4">
+          <%= form.label :next_maintenance_date,
+              "Tanggal Maintenance Berikutnya (Manual)",
+              class: "form-label fw-semibold" %>
+
+          <%= form.date_field :next_maintenance_date,
+              class: "form-control" %>
+
+          <small class="text-muted">
+            Kosongkan jika ingin menggunakan perhitungan otomatis.
+          </small>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :maintenance_type, "Jenis Maintenance",
+            class: "form-label fw-semibold" %>
+
+        <%= form.select :maintenance_type,
+            ["Inspection", "Repair", "Replacement", "Cleaning"],
+            { prompt: "Pilih Jenis Maintenance" },
+            { class: "form-select", required: true } %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :technician, "Nama Teknisi",
+            class: "form-label fw-semibold" %>
+
+        <%= form.text_field :technician,
+            class: "form-control",
+            placeholder: "Masukkan nama teknisi",
+            required: true %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :description, "Deskripsi Pekerjaan",
+            class: "form-label fw-semibold" %>
+
+        <%= form.text_area :description,
+            class: "form-control",
+            rows: 4,
+            placeholder: "Tuliskan detail pekerjaan maintenance..." %>
+      </div>
+
+      <hr>
+
+      <div class="d-flex justify-content-end gap-2">
+        <%= link_to "Batal", maintenances_path,
+            class: "btn btn-light border px-4" %>
+
+        <%= form.submit "Simpan Maintenance",
+            class: "btn btn-primary px-4" %>
+      </div>
+
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  equipment: one
+  maintenance_date: 2026-11-25
+  maintenance_type: MyString
+  technician: MyString
+  description: MyText
+
+two:
+  equipment: two
+  maintenance_date: 2026-11-25
+  maintenance_type: MyString
+  technician: MyString
+  description: MyText
